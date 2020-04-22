@@ -13,6 +13,7 @@ const cookieParser = require('cookie-parser');
 const config = require('./config/key');
 //User 모델 가져오기
 const { User } = require('./models/User');
+const { auth } = require('./middleware/auth');
 
 //bodyParser에 옵션 주기
 app.use(bodyParser.urlencoded({ extended: true })); //bodyParser가 클라이언트에서 오는 정보를 서버에서 분석해서 가져올 수 있게 해준다.(application/x-www-from/urlencoded)
@@ -33,7 +34,9 @@ mongoose
 
 //root dr('/')에 오면 Hello World! 출력
 app.get('/', (req, res) => res.send('Hello World! ~~ 안녕하세요'));
-app.post('/register', (req, res) => {
+
+//register route
+app.post('/api/users/register', (req, res) => {
 	//회원가입할 때 필요한 정보들을 클라이언트에서 가져오면 그것들을 db에 넣어준다.
 	const user = new User(req.body);
 	user.save((err, userInfo) => {
@@ -42,7 +45,8 @@ app.post('/register', (req, res) => {
 	});
 });
 
-app.post('/login', (req, res) => {
+//login route
+app.post('/api/users/login', (req, res) => {
 	//요청된 이메일을 데이터 베이스에서 있는지 찾는다.
 	User.findOne({ email: req.body.email }, (err, user) => {
 		if (!user) {
@@ -59,6 +63,7 @@ app.post('/login', (req, res) => {
 					message: '비밀번호가 틀렸습니다.',
 				});
 			}
+			//비밀번호까지 맞다면 토큰을 생성하기.
 			user.generateToken((err, user) => {
 				if (err) return res.status(400).send(err);
 				// token을 저장한다. 어디에? 쿠키, 로컬스토리지
@@ -69,8 +74,20 @@ app.post('/login', (req, res) => {
 			});
 		});
 	});
+});
 
-	//비밀번호까지 맞다면 토큰을 생성하기.
+app.get('/api/users/auth', auth, (req, res) => {
+	//여기까지 미들웨어를 통과해 왔다는 얘기는 Authentication이 true
+	res.status(200).json({
+		_id: req.user_id,
+		isAdmin: req.user.role === 0 ? false : true,
+		isAuth: true,
+		email: req.user.email,
+		name: req.user.name,
+		lastname: req.user.lastname,
+		role: req.user.role,
+		image: req.user.image,
+	});
 });
 
 //port number 5000에서 앱을 실행
