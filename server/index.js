@@ -33,7 +33,7 @@ mongoose
 	.catch((e) => console.error(e));
 
 //root dr('/')에 오면 Hello World! 출력
-app.get('/', (req, res) => res.send('Hello World! ~~ 안녕하세요'));
+app.get('/', (req, res) => res.send('Dev server on'));
 
 //register route
 app.post('/api/users/register', (req, res) => {
@@ -95,6 +95,10 @@ app.get('/api/users/logout', auth, (req, res) => {
 		if (err) return res.json({ success: false, err });
 		return res.status(200).send({ success: true });
 	});
+});
+
+app.get('/api/hello', (req, res) => {
+	res.send('안녕하세요 !');
 });
 
 //port number 5000에서 앱을 실행
