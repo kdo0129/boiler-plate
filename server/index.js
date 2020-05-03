@@ -97,9 +97,9 @@ app.get('/api/users/logout', auth, (req, res) => {
 	});
 });
 
-app.get('/api/hello', (req, res) => {
-	res.send('안녕하세요 !');
-});
+// app.get('/api/hello', (req, res) => {
+// 	res.send('안녕하세요 !');
+// });
 
 //port number 5000에서 앱을 실행
 app.listen(port, () => console.log(`App listening on port ${port}!`));

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser } from '../../../_action/user_action';
+import { withRouter } from 'react-router-dom';
 
-const LoginPage = () => {
+const LoginPage = (props) => {
 	const dispatch = useDispatch();
 
 	const [Email, setEmail] = useState('');
@@ -24,7 +25,13 @@ const LoginPage = () => {
 			password: Password,
 		};
 
-		dispatch(loginUser(body));
+		dispatch(loginUser(body)).then((res) => {
+			if (res.payload.loginSuccess) {
+				props.history.push('/');
+			} else {
+				alert('아이디 또는 비밀번호를 확인하세요');
+			}
+		});
 	};
 
 	return (
@@ -52,4 +59,4 @@ const LoginPage = () => {
 	);
 };
 
-export default LoginPage;
+export default withRouter(LoginPage);
